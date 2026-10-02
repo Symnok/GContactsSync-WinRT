@@ -1,0 +1,71 @@
+<Page
+    x:Class="GContactsSync.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <StackPanel Margin="19,12,19,24">
+
+            <TextBlock Text="settings" Margin="0,8,0,8"
+                       Style="{ThemeResource HeaderTextBlockStyle}" />
+
+            <!-- AUTOMATIC DOWNLOAD -->
+            <TextBlock Text="sync from Google" Margin="0,12,0,0"
+                       Style="{ThemeResource SubheaderTextBlockStyle}" />
+
+            <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="download contacts automatically" FontSize="18"
+                           TextWrapping="Wrap" VerticalAlignment="Center" />
+                <ToggleSwitch Grid.Column="1" x:Name="AutoSyncSwitch" MinWidth="0"
+                              Toggled="OnAutoSyncToggled" />
+            </Grid>
+
+            <TextBlock Text="check every" FontSize="18" Margin="0,12,0,4" />
+            <ComboBox x:Name="IntervalBox" Width="240" HorizontalAlignment="Left"
+                      SelectionChanged="OnIntervalChanged">
+                <ComboBoxItem Content="15 minutes" Tag="15" />
+                <ComboBoxItem Content="30 minutes" Tag="30" />
+                <ComboBoxItem Content="1 hour" Tag="60" />
+                <ComboBoxItem Content="2 hours" Tag="120" />
+                <ComboBoxItem Content="4 hours" Tag="240" />
+                <ComboBoxItem Content="8 hours" Tag="480" />
+            </ComboBox>
+
+            <TextBlock Text="Windows Phone will not run a background task more often than every 15 minutes, and schedules it within another 15 of the interval elapsing - so this is a floor, not a promise. It also only runs while the phone allows background apps and has a connection."
+                       TextWrapping="Wrap" FontSize="13" Opacity="0.6" Margin="0,8,0,0" />
+
+            <!-- UPLOAD -->
+            <TextBlock Text="upload to Google" Margin="0,24,0,0"
+                       Style="{ThemeResource SubheaderTextBlockStyle}" />
+            <TextBlock Text="Uploading is always manual, from the button on the main page. A background run cannot ask you anything, and an edit made on the phone by accident should not reach Google unattended."
+                       TextWrapping="Wrap" FontSize="13" Opacity="0.6" Margin="0,8,0,0" />
+
+            <!-- STATE -->
+            <TextBlock Text="sync state" Margin="0,24,0,0"
+                       Style="{ThemeResource SubheaderTextBlockStyle}" />
+            <TextBlock x:Name="StateText" FontSize="14" Opacity="0.7"
+                       TextWrapping="Wrap" Margin="0,8,0,0" />
+
+            <Button x:Name="ResetButton" Content="forget sync state"
+                    HorizontalAlignment="Stretch" Margin="0,12,0,0"
+                    Click="OnResetClick" />
+            <TextBlock Text="Makes the next sync a full one. Contacts already on the phone are kept, the account stays signed in."
+                       TextWrapping="Wrap" FontSize="13" Opacity="0.6" Margin="0,4,0,0" />
+
+            <!-- ABOUT -->
+            <TextBlock Text="about" Margin="0,24,0,0"
+                       Style="{ThemeResource SubheaderTextBlockStyle}" />
+            <TextBlock x:Name="AboutText" FontSize="14" Opacity="0.7"
+                       TextWrapping="Wrap" Margin="0,8,0,0" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

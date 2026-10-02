@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest"
+         xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest"
+         xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest"
+         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+  <!-- Identity, Publisher and PhoneProductId are the app's identity to the phone, NOT its name.
+       They stay as they were on purpose: change any of them and the phone treats this as a
+       different app, installs it beside the old one, and leaves behind the contacts, the saved
+       account and the sync state the old one owned. Keeping Publisher also means the signing
+       certificate already trusted on the phone still works, so only the .appx needs installing.
+       The visible name is DisplayName above. -->
+  <Identity Name="GContactsCardDav" Publisher="CN=GContactsCardDav" Version="1.0.11.0" />
+  <mp:PhoneIdentity PhoneProductId="8f3c21d6-5b47-4e0a-9c68-2a71d4e9b503" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Properties>
+    <!-- What the app list and the tile show. Everything else was renamed to match - namespaces,
+         assemblies, projects, the package file - but Identity and Publisher below are deliberately
+         left as they were. -->
+    <DisplayName>GContactsSync</DisplayName>
+    <PublisherDisplayName>GContactsCardDav</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.1</OSMinVersion>
+    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="en-US" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="GContactsSync.App">
+      <m3:VisualElements DisplayName="GContactsSync" ForegroundText="light"
+                         Square150x150Logo="Assets\Logo.png"
+                         Square44x44Logo="Assets\SmallLogo.png"
+                         Description="Sync Google Contacts over CardDAV"
+                         BackgroundColor="#1A73E8">
+        <m3:DefaultTile Square71x71Logo="Assets\Square71x71Logo.png">
+          <!-- Without this the tile is artwork only - WP8.1 does not draw the name on a tile unless
+               the app asks for it, which is why the tile had no label. Only the medium tile is
+               listed: the small one cannot show a name, and no wide logo is shipped. -->
+          <m3:ShowNameOnTiles>
+            <m3:ShowOn Tile="square150x150Logo" />
+          </m3:ShowNameOnTiles>
+        </m3:DefaultTile>
+        <m3:SplashScreen Image="Assets\SplashScreen.png" />
+      </m3:VisualElements>
+      <Extensions>
+        <!-- documentsLibrary access is only granted for file types the app associates itself with -
+             the manifest is rejected (APPX1627) without at least one. The only thing this app ever
+             reads there is gcontactssync.cfg, so .cfg is the association, and it is narrow enough
+             not to make this app a handler for anything people care about. -->
+        <Extension Category="windows.fileTypeAssociation">
+          <FileTypeAssociation Name="gcontactssynccfg">
+            <SupportedFileTypes>
+              <FileType>.cfg</FileType>
+            </SupportedFileTypes>
+          </FileTypeAssociation>
+        </Extension>
+        <!-- The periodic Google-to-phone download. EntryPoint is the runtime class in the
+             GContactsSync.BackgroundTasks winmd component; the app registers it at runtime
+             with a TimeTrigger, whose interval Windows Phone floors at 15 minutes. Type "timer"
+             is what a time trigger needs. -->
+        <Extension Category="windows.backgroundTasks" EntryPoint="GContactsSync.BackgroundTasks.PeriodicSyncTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <!-- internetClient covers the raw sockets the OpenSSL transport opens.
+
+         contacts is what lets the app keep its own contact store, which the People hub then shows
+         alongside every other account. It has to come from the 2014 namespace: the base 2010
+         schema's capability list has no "contacts" in it, and a plain <Capability> is rejected
+         with APPX3024. -->
+    <Capability Name="internetClient" />
+    <m3:Capability Name="contacts" />
+    <!-- documentsLibrary: read Documents\gcontactssync.cfg, so an App Password does not have to
+         be typed on a phone keyboard for every test. Read only, and only that one file. -->
+    <Capability Name="documentsLibrary" />
+  </Capabilities>
+</Package>
